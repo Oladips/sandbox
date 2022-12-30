@@ -1,5 +1,6 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
-import 'package:xml/xml.dart' as xml;
 
 void main() {
   runApp(const MyApp());
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Flutter CustomPaint Page'),
     );
   }
 }
@@ -31,7 +32,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  var offset = [];
+
+  @override
+  void initState() {
+    offset = [];
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,30 +47,61 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: GestureDetector(
-        onPanStart: (details) {},
+        onPanStart: (details) {
+          setState(() {
+            offset.add(details.localPosition);
+          });
+        },
+        onPanUpdate: (details) {
+          setState(() {
+            offset.add(details.localPosition);
+          });
+        },
+        onPanEnd: (details) {
+          setState(() {
+            offset.add(null);
+          });
+        },
         child: Center(
             child: CustomPaint(
-          painter: Painter(),
+          painter: Painter(offset),
           child: Container(
-            height: 400,
-            width: 400,
-            color: Colors.red[50],
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            // color: Colors.red[50],
           ),
         )),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }
 }
 
 class Painter extends CustomPainter {
+  final List<dynamic> offsets;
+
+  Painter(this.offsets);
   @override
   void paint(Canvas canvas, Size size) {
-    // TODO: implement paint
+    final paint = Paint()
+      ..color = Colors.red
+      ..isAntiAlias = true
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 6.0;
+    for (var i = 0; i < offsets.length - 1; i++) {
+      if (offsets[i] != null && offsets[i + 1] != null) {
+        canvas.drawLine(
+          offsets[i],
+          offsets[i + 1],
+          paint,
+        );
+      } else if (offsets[i] != null && offsets[i + 1] == null) {
+        canvas.drawPoints(
+          PointMode.points,
+          [offsets[i]],
+          paint,
+        );
+      }
+    }
   }
 
   @override
