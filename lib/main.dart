@@ -65,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Center(
             child: CustomPaint(
           painter: Painter(offset),
-          child: Container(
+          child: SizedBox(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             // color: Colors.red[50],
@@ -83,7 +83,7 @@ class Painter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.red
+      ..color = Colors.blue
       ..isAntiAlias = true
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 6.0;
